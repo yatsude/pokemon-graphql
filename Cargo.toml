@@ -19,12 +19,12 @@ name = "integration"
 path = "crates/tests/mod.rs"
 
 [workspace]
-members = ["crates/pokemon"]
+members = ["crates/schema"]
 
 [dependencies]
 
 # Crates dependency
-pokemon = { version = "1.0.0", path = "crates/pokemon" }
+schema = { version = "1.0.0", path = "crates/schema" }
 
 # Core dependency
 axum = { version = "0.7.4", features = ["default", "tracing", "tower-log"] }

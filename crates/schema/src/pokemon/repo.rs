@@ -2,7 +2,7 @@ use async_graphql::Error;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::{input::CreatePokemonInput, object::Pokemon};
+use crate::pokemon::{CreatePokemonInput, Pokemon};
 
 #[tracing::instrument(name = "get one pokemon from database", skip(conn))]
 pub async fn get_pokemon_by_id(conn: &PgPool, id: i32) -> async_graphql::Result<Pokemon, Error> {

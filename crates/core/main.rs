@@ -10,7 +10,7 @@ use tower_http::{cors::CorsLayer, trace::TraceLayer};
 use tracing::Level;
 use uuid::Uuid;
 
-use corelib::{config, env, schema, subscriber, utils};
+use corelib::{config, env, subscriber, utils};
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {

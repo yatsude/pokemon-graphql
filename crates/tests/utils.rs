@@ -6,7 +6,7 @@ use sqlx::{Connection, Executor, PgConnection, PgPool};
 use tracing::Level;
 use uuid::Uuid;
 
-use corelib::{config, env::load_env, schema, subscriber};
+use corelib::{config, env::load_env, subscriber};
 
 pub async fn configure_database(config: &config::DatabaseSettings) -> PgPool {
     let mut connection = PgConnection::connect(config.url_without_db().expose_secret().as_str())
