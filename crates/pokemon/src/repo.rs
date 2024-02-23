@@ -28,8 +28,8 @@ pub async fn get_pokemon_by_id(conn: &PgPool, id: i32) -> async_graphql::Result<
                 Err(message.into())
             }
             _ => {
-                tracing::error!("something went wrong!");
-                Err(e.into())
+                tracing::error!("error: {}", e.to_string());
+                Err("something went wrong!".into())
             }
         },
     }
@@ -70,12 +70,12 @@ pub async fn create_pokemon(
                     tracing::info!(message);
                     return Err(message.into());
                 }
-                tracing::error!("query error!");
-                Err(db_error.into())
+                tracing::error!("error: {:?}", db_error);
+                Err("something went wrong!".into())
             }
             _ => {
-                tracing::error!("something went wrong!");
-                Err(e.into())
+                tracing::error!("error: {}", e.to_string());
+                Err("something went wrong".into())
             }
         },
     }
