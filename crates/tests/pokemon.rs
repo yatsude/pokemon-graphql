@@ -1,7 +1,7 @@
 use serde_json::json;
 use uuid::Uuid;
 
-use pokemon::Pokemon;
+use schema::pokemon::Pokemon;
 
 use crate::utils::spawn_graphql;
 

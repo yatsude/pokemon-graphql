@@ -1,7 +1,7 @@
 use async_graphql::{Context, Error, Object};
 use sqlx::PgPool;
 
-use crate::{object::Pokemon, repo};
+use crate::pokemon::{repo, Pokemon};
 
 #[derive(Default, Debug)]
 pub struct PokemonQuery {}
