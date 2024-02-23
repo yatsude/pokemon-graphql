@@ -1,0 +1,28 @@
+[package]
+name = "pokemon"
+version = "1.0.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "pokemon"
+path = "src/lib.rs"
+
+[dependencies]
+async-graphql = { version = "7.0.2" }
+chrono = { version = "0.4.34" }
+uuid = { version = "1.7.0", features = ["v7"] }
+tracing = { version = "0.1.40" }
+
+[dependencies.sqlx]
+version = "0.7.3"
+default-features = false
+features = [
+    "runtime-tokio-rustls",
+    "macros",
+    "postgres",
+    "uuid",
+    "chrono",
+    "migrate"
+]
