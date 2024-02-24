@@ -1,4 +1,6 @@
-use axum::response::Html;
+use axum::http::header;
+use axum::response::{Html, IntoResponse};
+use serde_json::json;
 
 pub async fn sandbox() -> Html<String> {
     let body = r#"
@@ -15,4 +17,20 @@ pub async fn sandbox() -> Html<String> {
     "#;
 
     Html(body.into())
+}
+
+pub async fn health_check() -> impl IntoResponse {
+    "OK"
+}
+
+pub async fn root() -> impl IntoResponse {
+    let content = json!({
+        "name": env!("CARGO_PKG_NAME"),
+        "version": env!("CARGO_PKG_VERSION"),
+        "rust-version": env!("CARGO_PKG_RUST_VERSION"),
+        "authors": env!("CARGO_PKG_AUTHORS")
+    })
+    .to_string();
+
+    ([(header::CONTENT_TYPE, "application/json")], content)
 }

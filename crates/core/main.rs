@@ -10,6 +10,7 @@ use tower_http::{cors::CorsLayer, trace::TraceLayer};
 use tracing::Level;
 use uuid::Uuid;
 
+use corelib::utils::{health_check, root};
 use corelib::{config, env, subscriber, utils};
 
 #[tokio::main]
@@ -47,8 +48,10 @@ async fn run_server(
         .make_span_with(|_request: &Request<Body>| tracing::debug_span!("processing request", request_id=%Uuid::now_v7()));
 
     let app = Router::new()
+        .route("/", routing::get(root))
+        .route("/health-check", routing::get(health_check))
         .route(
-            "/",
+            "/graphql",
             routing::get(utils::sandbox).post_service(GraphQL::new(schema)),
         )
         .layer(trace_layer)
