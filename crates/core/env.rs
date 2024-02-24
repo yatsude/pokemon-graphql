@@ -32,10 +32,12 @@ pub fn load_env() {
         .unwrap_or(Environment::Development.into())
         .into();
 
+    dotenvy::dotenv().ok();
+
     match environment {
         Environment::Production => {}
         _ => {
-            dotenvy::dotenv().ok();
+            dotenvy::from_filename(".env.default").ok();
         }
     };
 }

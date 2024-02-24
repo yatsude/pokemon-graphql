@@ -9,14 +9,10 @@ env:
   SQLX_VERSION: 0.7.3
   SQLX_FEATURES: "rustls,postgres"
 
-  APP_PORT: 0
-  APP_HOST: 127.0.0.1
-  APP_LOG: info
   DATABASE_USERNAME: postgres
   DATABASE_PASSWORD: password
   DATABASE_NAME: newsletter
   DATABASE_PORT: 5432
-  DATABASE_HOST: 127.0.0.1
 
 jobs:
   test:
