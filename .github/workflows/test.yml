@@ -3,6 +3,12 @@ on:
     types: [ opened, synchronize, reopened ]
     branches:
       - main
+    paths:
+      - crates/**
+      - .sqlx/**
+      - Cargo.toml
+      - Dockerfile
+      - .github/workflows/**
 
 env:
   CARGO_TERM_COLOR: always
