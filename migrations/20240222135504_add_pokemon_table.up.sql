@@ -1,4 +1,5 @@
 -- Add up migration script here
+-- Create table pokemon
 CREATE TABLE pokemon
 (
     _id             uuid    NOT NULL,
