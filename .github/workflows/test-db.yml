@@ -16,6 +16,7 @@ env:
   DATABASE_HOST: 127.0.0.1
   DATABASE_NAME: pokemon_graphql
   DATABASE_PORT: 5432
+  DATABASE_URL: postgres://postgres:password@127.0.0.1:5432/pokemon_graphql
 
 jobs:
   test:
@@ -23,7 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ENV: test
-      DATABASE_URL: postgres://${{ env.DATABASE_USERNAME }}:${{ env.DATABASE_PASSWORD }}@${{ env.DATABASE_HOST }}:${{ env.DATABASE_PORT }}/${{ env.DATABASE_NAME }}
     services:
       postgres:
         image: postgres:16
