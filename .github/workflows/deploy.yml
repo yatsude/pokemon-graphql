@@ -1,0 +1,22 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - crates/**
+      - .sqlx/**
+      - Cargo.toml
+      - Dockerfile
+      - .github/workflows/**
+
+jobs:
+  deploy:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Digitalocean CLI
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: Deploy to Production
+        run: doctl apps update ${{ secrets.DIGITALOCEAN_APPS_ID }}
