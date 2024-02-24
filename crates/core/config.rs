@@ -1,6 +1,9 @@
 use config::Config;
-use secrecy::{ExposeSecret, Secret, SecretString};
+use secrecy::{ExposeSecret, SecretString};
 use serde::Deserialize;
+use sqlx::postgres::{PgConnectOptions, PgSslMode};
+use sqlx::ConnectOptions;
+use tracing::log::LevelFilter;
 
 #[derive(Deserialize)]
 pub struct Settings {
@@ -15,28 +18,28 @@ pub struct DatabaseSettings {
     pub host: String,
     pub port: u16,
     pub name: String,
+    pub ssl: bool,
 }
 
 impl DatabaseSettings {
-    pub fn url(&self) -> SecretString {
-        Secret::new(format!(
-            "postgres://{}:{}@{}:{}/{}",
-            self.username,
-            self.password.expose_secret(),
-            self.host,
-            self.port,
-            self.name
-        ))
+    pub fn without_db(&self) -> PgConnectOptions {
+        let ssl_mode = if self.ssl {
+            PgSslMode::Require
+        } else {
+            PgSslMode::Prefer
+        };
+        PgConnectOptions::new()
+            .host(&self.host)
+            .username(&self.username)
+            .password(self.password.expose_secret())
+            .port(self.port)
+            .ssl_mode(ssl_mode)
     }
 
-    pub fn url_without_db(&self) -> SecretString {
-        Secret::new(format!(
-            "postgres://{}:{}@{}:{}",
-            self.username,
-            self.password.expose_secret(),
-            self.host,
-            self.port
-        ))
+    pub fn with_db(&self) -> PgConnectOptions {
+        self.without_db()
+            .database(&self.name)
+            .log_statements(LevelFilter::Trace)
     }
 }
 

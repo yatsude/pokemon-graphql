@@ -1,7 +1,6 @@
 use std::env;
 
 use once_cell::sync::Lazy;
-use secrecy::ExposeSecret;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use tracing::Level;
 use uuid::Uuid;
@@ -9,7 +8,7 @@ use uuid::Uuid;
 use corelib::{config, env::load_env, subscriber};
 
 pub async fn configure_database(config: &config::DatabaseSettings) -> PgPool {
-    let mut connection = PgConnection::connect(config.url_without_db().expose_secret().as_str())
+    let mut connection = PgConnection::connect_with(&config.without_db())
         .await
         .unwrap();
     connection
@@ -17,9 +16,7 @@ pub async fn configure_database(config: &config::DatabaseSettings) -> PgPool {
         .await
         .expect("Failed to create database.");
 
-    let pool = PgPool::connect(config.url().expose_secret().as_str())
-        .await
-        .unwrap();
+    let pool = PgPool::connect_with(config.with_db()).await.unwrap();
 
     sqlx::migrate!("./migrations")
         .run(&pool)

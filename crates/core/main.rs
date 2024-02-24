@@ -3,7 +3,6 @@ use std::{str::FromStr, sync::Arc, time::Duration};
 use async_graphql_axum::GraphQL;
 use axum::routing;
 use axum::{body::Body, extract::Request, Router};
-use secrecy::ExposeSecret;
 use sqlx::{postgres::PgPoolOptions, PgPool};
 use tokio::net::TcpListener;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
@@ -29,8 +28,7 @@ async fn main() -> std::io::Result<()> {
 
     let pool = PgPoolOptions::new()
         .acquire_timeout(Duration::from_secs(2))
-        .connect_lazy(settings.database.url().expose_secret())
-        .unwrap();
+        .connect_lazy_with(settings.database.with_db());
 
     run_server(listener, pool, settings).await
 }

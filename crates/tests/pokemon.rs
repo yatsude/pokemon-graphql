@@ -64,7 +64,7 @@ async fn success_create_pokemon() {
 }
 
 #[tokio::test]
-async fn success_find_pokemon_by_gen_id() {
+async fn success_find_pokemon_by_id() {
     let schema = spawn_graphql().await.finish();
 
     let pokemon = Pokemon {
