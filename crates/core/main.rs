@@ -45,7 +45,7 @@ async fn run_server(
 
     let cors_layer = CorsLayer::permissive();
     let trace_layer = TraceLayer::new_for_http()
-        .make_span_with(|_request: &Request<Body>| tracing::debug_span!("processing request", request_id=%Uuid::now_v7()));
+        .make_span_with(|_request: &Request<Body>| tracing::info_span!("processing request", request_id=%Uuid::now_v7()));
 
     let app = Router::new()
         .route("/", routing::get(root))
