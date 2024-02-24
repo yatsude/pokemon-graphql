@@ -1,0 +1,51 @@
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches:
+      - main
+    paths:
+      - migrations/**
+
+env:
+  CARGO_TERM_COLOR: always
+  SQLX_VERSION: 0.7.3
+  SQLX_FEATURES: "rustls,postgres"
+
+  DATABASE_USERNAME: postgres
+  DATABASE_PASSWORD: password
+  DATABASE_HOST: 127.0.0.1
+  DATABASE_NAME: pokemon_graphql
+  DATABASE_PORT: 5432
+
+jobs:
+  test:
+    name: Migration Test
+    runs-on: ubuntu-latest
+    env:
+      ENV: test
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ${{ env.DATABASE_USERNAME }}
+          POSTGRES_PASSWORD: ${{ env.DATABASE_PASSWORD }}
+          POSTGRES_DB: ${{ env.DATABASE_NAME }}
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: sqlx-${{ env.SQLX_VERSION }}
+      - name: Install sqlx-cli
+        run:
+          cargo install sqlx-cli
+          --version=${{ env.SQLX_VERSION }}
+          --features ${{ env.SQLX_FEATURES }}
+          --no-default-features
+          --locked
+      - name: Migrate database
+        run: |
+          sudo apt-get install libpq-dev -y
+          SKIP_DOCKER=true SKIP_ENV=true ./scripts/init_db.sh
