@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ENV: test
+      DATABASE_URL: postgres://${{ env.DATABASE_USERNAME }}:${{ env.DATABASE_PASSWORD }}@${{ env.DATABASE_HOST }}:${{ env.DATABASE_PORT }}/${{ env.DATABASE_NAME }}
     services:
       postgres:
         image: postgres:16
@@ -33,7 +34,6 @@ jobs:
         ports:
           - 5432:5432
     steps:
-      - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
@@ -45,7 +45,13 @@ jobs:
           --features ${{ env.SQLX_FEATURES }}
           --no-default-features
           --locked
-      - name: Migrate database
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Migrate database HEAD
         run: |
           sudo apt-get install libpq-dev -y
           SKIP_DOCKER=true SKIP_ENV=true ./scripts/init_db.sh
+      - uses: actions/checkout@v4
+      - name: Migrate Current Change
+        run: sqlx migrate run
