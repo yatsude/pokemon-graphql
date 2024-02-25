@@ -1,9 +1,9 @@
 use async_graphql::Object;
+use uuid::Uuid;
 
 #[derive(Default)]
 pub struct Pokemon {
-    pub _id: String,
-    pub id: i32,
+    pub id: Uuid,
     pub name: String,
     pub base_experience: i32,
     pub height: i32,
@@ -13,7 +13,7 @@ pub struct Pokemon {
 
 #[Object]
 impl Pokemon {
-    async fn id(&self) -> i32 {
+    async fn id(&self) -> Uuid {
         self.id
     }
 

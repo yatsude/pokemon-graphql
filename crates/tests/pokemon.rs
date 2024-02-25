@@ -10,8 +10,7 @@ async fn success_create_pokemon() {
     let schema = spawn_graphql().await.finish();
 
     let pokemon = Pokemon {
-        _id: Uuid::now_v7().into(),
-        id: 1,
+        id: Uuid::now_v7(),
         name: "pikachu".into(),
         base_experience: 120,
         height: 4,
@@ -22,7 +21,6 @@ async fn success_create_pokemon() {
         r#"
             mutation {{
               createPokemon(input: {{
-                id: {},
                 name: "{}",
                 baseExperience: {},
                 height: {},
@@ -33,12 +31,7 @@ async fn success_create_pokemon() {
               }}
             }}
         "#,
-        pokemon.id,
-        pokemon.name,
-        pokemon.base_experience,
-        pokemon.height,
-        pokemon.is_default,
-        pokemon.order
+        pokemon.name, pokemon.base_experience, pokemon.height, pokemon.is_default, pokemon.order
     );
 
     let res = schema.execute(req).await;
@@ -52,7 +45,7 @@ async fn success_create_pokemon() {
         .unwrap()
         .clone();
 
-    assert_eq!(*data.get("id").unwrap(), json!(pokemon.id));
+    assert!(data.get("id").is_some());
     assert_eq!(*data.get("name").unwrap(), json!(pokemon.name));
     assert_eq!(
         *data.get("baseExperience").unwrap(),
@@ -68,8 +61,7 @@ async fn success_find_pokemon_by_id() {
     let schema = spawn_graphql().await.finish();
 
     let pokemon = Pokemon {
-        _id: Uuid::now_v7().into(),
-        id: 1,
+        id: Uuid::now_v7(),
         name: "pikachu".into(),
         base_experience: 120,
         height: 4,
@@ -80,7 +72,6 @@ async fn success_find_pokemon_by_id() {
         r#"
             mutation {{
               createPokemon(input: {{
-                id: {},
                 name: "{}",
                 baseExperience: {},
                 height: {},
@@ -91,12 +82,7 @@ async fn success_find_pokemon_by_id() {
               }}
             }}
         "#,
-        pokemon.id,
-        pokemon.name,
-        pokemon.base_experience,
-        pokemon.height,
-        pokemon.is_default,
-        pokemon.order
+        pokemon.name, pokemon.base_experience, pokemon.height, pokemon.is_default, pokemon.order
     );
 
     let res = schema.execute(req).await;
@@ -111,6 +97,8 @@ async fn success_find_pokemon_by_id() {
         .clone();
     assert!(data.get("id").is_some());
 
+    let id = data.get("id").unwrap();
+
     let req = format!(
         r#"
             query {{
@@ -119,7 +107,7 @@ async fn success_find_pokemon_by_id() {
               }}
             }}
         "#,
-        pokemon.id
+        id
     );
 
     let res = schema.execute(req).await;
@@ -132,7 +120,7 @@ async fn success_find_pokemon_by_id() {
         .unwrap()
         .clone();
 
-    assert_eq!(*data.get("id").unwrap(), json!(pokemon.id));
+    assert_eq!(*data.get("id").unwrap(), json!(id));
     assert_eq!(*data.get("name").unwrap(), json!(pokemon.name));
     assert_eq!(
         *data.get("baseExperience").unwrap(),
