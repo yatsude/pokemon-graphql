@@ -20,17 +20,18 @@ name = "integration"
 path = "crates/tests/mod.rs"
 
 [workspace]
-members = ["crates/schema"]
+members = ["crates/schema", "crates/shared"]
 
 [dependencies]
 
 # Crates dependency
 schema = { version = "1.0.0", path = "crates/schema" }
+shared = { version = "0.1.0", path = "crates/shared" }
 
 # Core dependency
 axum = { version = "0.7.4", features = ["default", "tracing", "tower-log"] }
 tower-http = { version = "0.5.0", features = ["cors", "trace"] }
-serde = { version = "1.0.196" }
+serde = { version = "1.0.196", features = ["derive"] }
 tokio = { version = "1.36.0", features = ["full"] }
 async-graphql = { version = "7.0.2", features = ["default", "tracing"] }
 async-graphql-axum = { version = "7.0.1" }
