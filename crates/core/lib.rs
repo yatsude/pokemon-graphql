@@ -1,4 +1,2 @@
-pub mod config;
-pub mod env;
+pub mod routes;
 pub mod subscriber;
-pub mod utils;

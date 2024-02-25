@@ -5,18 +5,19 @@ use sqlx::{Connection, Executor, PgConnection, PgPool};
 use tracing::Level;
 use uuid::Uuid;
 
-use corelib::{config, env::load_env, subscriber};
+use corelib::subscriber;
+use shared::settings;
 
-pub async fn configure_database(config: &config::DatabaseSettings) -> PgPool {
-    let mut connection = PgConnection::connect_with(&config.without_db())
+pub async fn configure_database(setting: &settings::DatabaseSettings) -> PgPool {
+    let mut connection = PgConnection::connect_with(&setting.without_db())
         .await
         .unwrap();
     connection
-        .execute(format!(r#"CREATE DATABASE "{}";"#, config.name).as_str())
+        .execute(format!(r#"CREATE DATABASE "{}";"#, setting.name).as_str())
         .await
         .expect("Failed to create database.");
 
-    let pool = PgPool::connect_with(config.with_db()).await.unwrap();
+    let pool = PgPool::connect_with(setting.with_db()).await.unwrap();
 
     sqlx::migrate!("./migrations")
         .run(&pool)
@@ -42,11 +43,11 @@ static TRACING: Lazy<()> = Lazy::new(|| {
 });
 
 pub async fn spawn_graphql() -> schema::AppSchemaBuilder {
-    load_env();
+    shared::env::load_env();
 
     Lazy::force(&TRACING);
 
-    let mut settings = config::get_configuration().expect("Failed to read configuration.");
+    let mut settings = settings::get_configuration().expect("Failed to read configuration.");
     settings.database.name = Uuid::now_v7().to_string();
 
     let pool = configure_database(&settings.database).await;

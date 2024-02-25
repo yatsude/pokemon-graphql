@@ -9,14 +9,15 @@ use tower_http::{cors::CorsLayer, trace::TraceLayer};
 use tracing::Level;
 use uuid::Uuid;
 
-use corelib::utils::{health_check, root};
-use corelib::{config, env, subscriber, utils};
+use corelib::routes::{health_check, root};
+use corelib::{routes, subscriber};
+use shared::{env, settings};
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
     env::load_env();
 
-    let settings = config::get_configuration().expect("Failed to read configuration.");
+    let settings = settings::get_configuration().expect("Failed to read configuration.");
 
     let log_level = Level::from_str(settings.app.log.as_str()).unwrap();
     let subscriber =
@@ -36,10 +37,10 @@ async fn main() -> std::io::Result<()> {
 async fn run_server(
     tcp_listener: TcpListener,
     database_pool: PgPool,
-    config: config::Settings,
+    setting: settings::Settings,
 ) -> Result<(), std::io::Error> {
     let schema = schema::build().data(database_pool).finish();
-    let config_state = Arc::new(config);
+    let setting_state = Arc::new(setting);
 
     let cors_layer = CorsLayer::permissive();
     let trace_layer = TraceLayer::new_for_http()
@@ -50,11 +51,11 @@ async fn run_server(
         .route("/health-check", routing::get(health_check))
         .route(
             "/graphql",
-            routing::get(utils::sandbox).post_service(GraphQL::new(schema)),
+            routing::get(routes::sandbox).post_service(GraphQL::new(schema)),
         )
         .layer(trace_layer)
         .layer(cors_layer)
-        .with_state(config_state);
+        .with_state(setting_state);
 
     axum::serve(tcp_listener, app).await.unwrap();
     Ok(())
