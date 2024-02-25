@@ -5,11 +5,10 @@ use uuid::Uuid;
 use crate::pokemon::{CreatePokemonInput, Pokemon};
 
 #[tracing::instrument(name = "get one pokemon from database", skip(conn))]
-pub async fn get_pokemon_by_id(conn: &PgPool, id: i32) -> async_graphql::Result<Pokemon, Error> {
-    let res = sqlx::query_as!(
-        Pokemon,
+pub async fn get_pokemon_by_id(conn: &PgPool, id: Uuid) -> async_graphql::Result<Pokemon, Error> {
+    let res = sqlx::query!(
         r#"
-            SELECT _id, id, name, base_experience, height, is_default, "order" FROM pokemon WHERE id = $1
+            SELECT _id, name, base_experience, height, is_default, "order" FROM pokemon WHERE _id = $1
         "#,
         id,
     )
@@ -19,7 +18,14 @@ pub async fn get_pokemon_by_id(conn: &PgPool, id: i32) -> async_graphql::Result<
     match res {
         Ok(record) => {
             tracing::info!("pokemon found!");
-            Ok(record)
+            Ok(Pokemon {
+                id: record._id,
+                name: record.name,
+                base_experience: record.base_experience,
+                height: record.height,
+                is_default: record.is_default,
+                order: record.order,
+            })
         }
         Err(e) => match e {
             sqlx::Error::RowNotFound => {
@@ -40,15 +46,13 @@ pub async fn create_pokemon(
     conn: &PgPool,
     input: &CreatePokemonInput,
 ) -> async_graphql::Result<Pokemon, Error> {
-    let res = sqlx::query_as!(
-        Pokemon,
+    let res = sqlx::query!(
         r#"
-            INSERT INTO pokemon (_id, id, name, base_experience, height, is_default, "order")
-            VALUES ($1, $2, $3, $4, $5, $6, $7) 
-            RETURNING _id, id, name, base_experience, height, is_default, "order"
+            INSERT INTO pokemon (_id, name, base_experience, height, is_default, "order")
+            VALUES ($1, $2, $3, $4, $5, $6) 
+            RETURNING _id, name, base_experience, height, is_default, "order"
         "#,
         Uuid::now_v7(),
-        input.id,
         input.name,
         input.base_experience,
         input.height,
@@ -61,7 +65,14 @@ pub async fn create_pokemon(
     match res {
         Ok(record) => {
             tracing::info!("success create pokemon!");
-            Ok(record)
+            Ok(Pokemon {
+                id: record._id,
+                name: record.name,
+                base_experience: record.base_experience,
+                height: record.height,
+                is_default: record.is_default,
+                order: record.order,
+            })
         }
         Err(e) => match e {
             sqlx::Error::Database(db_error) => {

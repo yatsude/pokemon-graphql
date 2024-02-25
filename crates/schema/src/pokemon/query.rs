@@ -1,5 +1,6 @@
 use async_graphql::{Context, Error, Object};
 use sqlx::PgPool;
+use uuid::Uuid;
 
 use crate::pokemon::{repo, Pokemon};
 
@@ -12,7 +13,7 @@ impl PokemonQuery {
     async fn pokemon_by_id<'ctx>(
         &self,
         ctx: &Context<'ctx>,
-        id: i32,
+        id: Uuid,
     ) -> async_graphql::Result<Pokemon, Error> {
         let conn = ctx.data::<PgPool>()?;
 
