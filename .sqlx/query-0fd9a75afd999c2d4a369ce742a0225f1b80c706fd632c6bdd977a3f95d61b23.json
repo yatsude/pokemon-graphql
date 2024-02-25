@@ -1,11 +1,11 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            INSERT INTO pokemon (_id, name, base_experience, height, is_default, \"order\")\n            VALUES ($1, $2, $3, $4, $5, $6) \n            RETURNING _id, name, base_experience, height, is_default, \"order\"\n        ",
+  "query": "\n            INSERT INTO pokemon (id, name, base_experience, height, is_default, \"order\")\n            VALUES ($1, $2, $3, $4, $5, $6) \n            RETURNING id, name, base_experience, height, is_default, \"order\"\n        ",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "_id",
+        "name": "id",
         "type_info": "Uuid"
       },
       {
@@ -53,5 +53,5 @@
       false
     ]
   },
-  "hash": "11b1bdd2d0c66086328ed68231faec1061efb42e5a43c4504a34ab9d7f71b111"
+  "hash": "0fd9a75afd999c2d4a369ce742a0225f1b80c706fd632c6bdd977a3f95d61b23"
 }
