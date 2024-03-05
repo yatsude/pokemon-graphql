@@ -15,7 +15,7 @@ impl PokemonMutation {
         input: CreatePokemonInput,
     ) -> async_graphql::Result<Pokemon, Error> {
         let conn = ctx.data::<PgPool>()?;
-        let pokemon = repo::create_pokemon(conn, &input).await?;
-        Ok(pokemon)
+
+        repo::create_pokemon(conn, &input).await
     }
 }

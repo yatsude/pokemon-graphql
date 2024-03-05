@@ -17,7 +17,6 @@ impl PokemonQuery {
     ) -> async_graphql::Result<Pokemon, Error> {
         let conn = ctx.data::<PgPool>()?;
 
-        let pokemon = repo::get_pokemon_by_id(conn, id).await?;
-        Ok(pokemon)
+        repo::get_pokemon_by_id(conn, id).await
     }
 }
