@@ -25,8 +25,8 @@ members = ["crates/schema", "crates/shared"]
 [dependencies]
 
 # Crates dependency
-schema = { version = "1.0.0", path = "crates/schema" }
-shared = { version = "0.1.0", path = "crates/shared" }
+schema = { path = "crates/schema" }
+shared = { path = "crates/shared" }
 
 # Core dependency
 axum = { version = "0.7.4", features = ["default", "tracing", "tower-log"] }
